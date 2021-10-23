@@ -24,6 +24,8 @@ class Filter:
 
         ############
         # TODO: implement prediction step
+        x = np.matmul(self.F(), x)
+        P = np.matmul(np.matmul(self.F(), P), self.F().transpose()) + self.Q()
         ############
         
         return x, P
@@ -33,6 +35,12 @@ class Filter:
 
         ############
         # TODO: implement update step
+        gamma = z - np.matmul(self.H(), x)
+        S = np.matmul(np.matmul(self.H(), P), self.H().transpose()) + R
+        K = np.matmul(np.matmul(P, self.H().transpose()), np.linalg.inv(S))
+        x = x + np.matmul(K, gamma)
+        KH = np.matmul(K, self.H())
+        P = np.matmul((np.identity(KH.shape[0]) - KH), P)
         ############
         
         return x, P     
