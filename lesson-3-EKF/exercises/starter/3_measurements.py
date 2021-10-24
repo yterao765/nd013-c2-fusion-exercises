@@ -19,8 +19,15 @@ class Camera:
         ############
         # TODO: implement and return h(x)
         ############
-        
-        return hx
+        px = x[0,0]
+        py = x[1,0]
+        pz = x[2,0]
+        if px == 0:
+            raise NameError('Jacobian not defined for x[0]=0!')
+        else:
+            hx[0,0] = self.c_i - self.f_i * py / px
+            hx[1,0] = self.c_j - self.f_j * pz / px
+            return hx
     
     def get_H(self, x):
         # calculate Jacobian H at current x from h(x)
@@ -29,8 +36,17 @@ class Camera:
         ############
         # TODO: implement and return H
         ############ 
-        
-        return H
+        px = x[0,0]
+        py = x[1,0]
+        pz = x[2,0]
+        if px == 0:
+            raise NameError('Jacobian not defined for x[0]=0!')
+        else:
+            H[0,0] = self.f_i * py / px**2
+            H[0,1] = - self.f_i / px
+            H[1,0] = self.f_j * pz / px**2
+            H[1,2] = - self.f_j / px
+            return H
  
  
 def calc_Jacobian(x):
