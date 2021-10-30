@@ -46,8 +46,11 @@ class Association:
         ############
         # TODO: return True if measurement lies inside gate, otherwise return False
         ############
-        
-        return True
+        threshold = chi2.ppf(0.95, 2)
+        if MHD <= threshold:
+            return True
+        else:
+            return False
         
     def get_closest_track_and_meas(self):
         # find closest track and measurement for next update
@@ -60,8 +63,27 @@ class Association:
         # - remove found track number from unassigned_tracks, meas number from unassigned_meas
         # - return indices of closest track and measurement for next update
         ############
+        A = self.association_matrix
+        if len(A) == 0:
+            return np.nan, np.nan
+        if (len(self.unassigned_tracks) == 0) | (len(self.unassigned_meas) == 0):
+            return np.nan, np, np.nan
+        # get index of minimum value in the association matrix
+        idx = np.unravel_index(np.argmin(A, axis=None), A.shape)
+        # return nan if no more association can be found
+        min_MHD = A[idx]
+        if min_MHD == np.inf:
+            return np.nan, np.nan
+        # delete row and column of association matrix for closest track and measurement
+        A = np.delete(A, obj=idx[0], axis=0)    # delete row
+        A = np.delete(A, obj=idx[1], axis=1)    # delete column
+        self.association_matrix = A
+        # get the numbers of track and measurement corresponding to the pair
+        track_num = self.unassigned_tracks.pop(idx[0])
+        meas_num = self.unassigned_meas.pop(idx[1])
+
+        return track_num, meas_num
         
-        return np.nan, np.nan
 
 ################## 
 class Track:
