@@ -28,8 +28,25 @@ class Camera:
         # TODO: Return True if x lies in sensor's field of view, otherwise return False. 
         # Don't forget to transform from vehicle to sensor coordinates.
         ############
-            
-        return False
+        # p in homegeneous coordinate
+        p_veh = np.ones((4, 1))
+        p_veh[0:3] = x[0:3]
+
+        # transform the corrdinates of x from vehicle to sensor
+        p_sens = self.veh_to_sens * p_veh
+
+        # get the angle of p_sens against x axis by calculating arctangent
+        visible = False
+        # solution 1
+        if p_sens[0] > 0:
+            alpha = np.arctan(p_sens[1]/p_sens[0]) # in the unit of radian
+            if self.fov[0] <= alpha <= self.fov[1]:
+                visible = True
+        # solution 2
+        # alpha = np.arctan2(p_sens[1], p_sens[0])
+        # if self.fov[0] <= alpha <= self.fov[1]:
+        #     visible = True
+        return visible
         
 #################
 def run():
